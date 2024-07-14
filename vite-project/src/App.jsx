@@ -3,6 +3,20 @@ import "./App.css";
 import axios from "axios";
 
 // custom hook
+// adding debouncing hooks
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timerId);
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 // adding isOnline hook
 const useOnline = () => {
   const [isOnline, setIsOnline] = useState(true);
@@ -46,6 +60,8 @@ const useTodos = () => {
   return { todo, loading };
 };
 function App() {
+  const [value, setValue] = useState(""); // input value state
+  const debouncedValue = useDebounce(value, 1000);
   const isOnline = useOnline();
   const { todo, loading } = useTodos();
   if (loading) {
@@ -53,6 +69,14 @@ function App() {
   }
   return (
     <>
+      debounce value is ------- {debouncedValue}
+      <input
+        type="text"
+        name=""
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        id=""
+      />
       {isOnline ? <h1>You are online</h1> : <h1>You are offline</h1>}
       {todo.map((item) => (
         <div key={item.id}>
